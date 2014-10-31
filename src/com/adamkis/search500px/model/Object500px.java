@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class Object500px implements Serializable {
 	
 	/**
@@ -46,11 +48,16 @@ public class Object500px implements Serializable {
 	}
 	
 	public void setImage_url_HD(String image_url){
-		final String extention = ".jpg";
-		String[] photo_url_partsStrings = image_url.split( extention );
-		photo_url_partsStrings[0] = photo_url_partsStrings[0].substring(0, photo_url_partsStrings[0].length()-1) + "5";
-		this.image_url_HD = photo_url_partsStrings[0] + extention + photo_url_partsStrings[1];
-		
+		try {
+			final String extention = ".jpg";
+			String[] photo_url_partsStrings = image_url.split( extention );
+			photo_url_partsStrings[0] = photo_url_partsStrings[0].substring(0, photo_url_partsStrings[0].length()-1) + "5";
+			this.image_url_HD = photo_url_partsStrings[0] + extention + photo_url_partsStrings[1];
+		} catch (Exception e) {
+			Log.w("search500px", "Generating URL for HD picture failed");
+//			e.printStackTrace();
+			this.image_url_HD = image_url;
+		}
 	}
 
 	public String getDescription() {
