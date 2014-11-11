@@ -54,7 +54,7 @@ public class ObjectUbimet implements Serializable {
 			photo_url_partsStrings[0] = photo_url_partsStrings[0].substring(0, photo_url_partsStrings[0].length()-1) + "5";
 			this.image_url_HD = photo_url_partsStrings[0] + extention + photo_url_partsStrings[1];
 		} catch (Exception e) {
-			Log.w("search500px", "Generating URL for HD picture failed");
+			Log.w("UbiMet", "Generating URL for HD picture failed");
 //			e.printStackTrace();
 			this.image_url_HD = image_url;
 		}

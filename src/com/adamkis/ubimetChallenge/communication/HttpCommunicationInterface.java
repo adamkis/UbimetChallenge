@@ -1,6 +1,6 @@
 package com.adamkis.ubimetChallenge.communication;
 
-public interface DataHandlerInterface {
+public interface HttpCommunicationInterface {
 
 	public void callBackPost( String response, String mode );
 	

@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">UbimetChallenge</string>
-    <string name="loading_current_location">Please wait, your location is currently loading</string>
+    
+    <string name="loading_current_location">Bitte warten, Ihre Location ist momentan Laden</string>
     
 
 

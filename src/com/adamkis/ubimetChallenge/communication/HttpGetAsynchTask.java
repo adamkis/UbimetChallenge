@@ -24,16 +24,16 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class DataLoaderGenericGet extends AsyncTask<String, Void, String > {
+public class HttpGetAsynchTask extends AsyncTask<String, Void, String > {
 
 	private CookieStore cookieStore;
 	private String mode = null;
 	private String url = null;
-	private DataHandlerInterface dataHandlerInterface = null;
+	private HttpCommunicationInterface dataHandlerInterface = null;
 	private HashMap<String, String> headers;
 
 	
-	public DataLoaderGenericGet( DataHandlerInterface dataHandlerInterface, String url, HashMap<String, String> headers, String mode ){
+	public HttpGetAsynchTask( HttpCommunicationInterface dataHandlerInterface, String url, HashMap<String, String> headers, String mode ){
 		this.dataHandlerInterface = dataHandlerInterface;
 		this.mode = mode;
 		this.url = url;
@@ -50,7 +50,7 @@ public class DataLoaderGenericGet extends AsyncTask<String, Void, String > {
     		dataHandlerInterface.callBackGet(response, mode);
     	}
     	else{
-    		Log.e("search500px", "the caller of the data load asynch task became null");
+    		Log.w("UbiMet", "The caller of the data load asynch task became null");
     	}
 
     }

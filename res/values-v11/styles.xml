@@ -6,14 +6,14 @@
         AppBaseTheme from res/values/styles.xml on API 11+ devices.
     -->
     
-    <style name="Search500pxActionBar" parent="Widget.AppCompat.Light.Base.ActionBar">
+    <style name="WhiteActionBar" parent="Widget.AppCompat.Light.Base.ActionBar">
         <item name="android:background">#FFFFFF</item>
     </style>
 
     
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
-        <item name="actionBarStyle">@style/Search500pxActionBar</item>
-    	<item name="android:actionBarStyle">@style/Search500pxActionBar</item>
+        <item name="actionBarStyle">@style/WhiteActionBar</item>
+    	<item name="android:actionBarStyle">@style/WhiteActionBar</item>
     	<item name="android:windowContentOverlay">@null</item>
     	<item name="android:windowBackground">@android:color/white</item>
     	
