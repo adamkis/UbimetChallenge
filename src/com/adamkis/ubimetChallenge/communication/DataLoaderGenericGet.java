@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,12 +30,14 @@ public class DataLoaderGenericGet extends AsyncTask<String, Void, String > {
 	private String mode = null;
 	private String url = null;
 	private DataHandlerInterface dataHandlerInterface = null;
+	private HashMap<String, String> headers;
 
 	
-	public DataLoaderGenericGet( DataHandlerInterface dataHandlerInterface, String url, String mode ){
+	public DataLoaderGenericGet( DataHandlerInterface dataHandlerInterface, String url, HashMap<String, String> headers, String mode ){
 		this.dataHandlerInterface = dataHandlerInterface;
 		this.mode = mode;
 		this.url = url;
+		this.headers = headers;
 	}
 
 	@Override
@@ -68,6 +73,16 @@ public class DataLoaderGenericGet extends AsyncTask<String, Void, String > {
 	        localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 
 	        HttpGet httpGet = new HttpGet( url ); 
+	        
+	        if( headers != null && !headers.isEmpty() ){
+		        Iterator<Entry<String, String>> it = headers.entrySet().iterator();
+		        while (it.hasNext()) {
+		            Entry<String, String> pairs = (Entry<String, String>)it.next();
+			        httpGet.setHeader(pairs.getKey(), pairs.getValue());
+		            it.remove();
+		        }
+	        }
+	        
 			Log.i("Toovia", "Mode: " + mode + " The URL called for Generic GET call: " + url );
 
 			HttpResponse httpResponse = httpclient.execute(httpGet, localContext);
