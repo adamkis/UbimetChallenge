@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UbimetChallenge</string>
-    
-    <string name="loading_current_location">Kerjuk varjon, az on helyzetenek lekerdezese folyamatban van</string>
-    
-
+    <string name="please_wait">Kerjuk varjon&#8230;</string>
 
 </resources>

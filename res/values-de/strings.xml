@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UbimetChallenge</string>
-    
-    <string name="loading_current_location">Bitte warten, Ihre Location ist momentan Laden</string>
-    
-
+    <string name="please_wait">Bitte warten&#8230;</string>
 
 </resources>

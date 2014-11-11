@@ -102,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		}
 		
 		try {
-			 
+			
 			JSONObject responseJSON = new JSONObject( UtilsUbimetChallenge.correctUbiMetJSONresponse(response) );
 			timezone.setText(responseJSON.getString("timezone"));
 			temperature.setText(responseJSON
