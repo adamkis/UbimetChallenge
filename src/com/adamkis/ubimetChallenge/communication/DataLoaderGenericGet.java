@@ -74,17 +74,18 @@ public class DataLoaderGenericGet extends AsyncTask<String, Void, String > {
 
 	        HttpGet httpGet = new HttpGet( url ); 
 	        
+
+			Log.i("Ubimet", "Mode: " + mode + " The URL called for Generic GET call: " + url );
 	        if( headers != null && !headers.isEmpty() ){
 		        Iterator<Entry<String, String>> it = headers.entrySet().iterator();
 		        while (it.hasNext()) {
 		            Entry<String, String> pairs = (Entry<String, String>)it.next();
 			        httpGet.setHeader(pairs.getKey(), pairs.getValue());
+			        Log.i("Ubimet", "Header: Key:" + pairs.getKey() + " Value: " + pairs.getValue() );
 		            it.remove();
 		        }
 	        }
 	        
-			Log.i("Toovia", "Mode: " + mode + " The URL called for Generic GET call: " + url );
-
 			HttpResponse httpResponse = httpclient.execute(httpGet, localContext);
 			HttpEntity responseEntity = httpResponse.getEntity();
 
