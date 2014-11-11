@@ -4,11 +4,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.adamkis.ubimetChallenge.communication.HttpCommunicationInterface;
 import com.adamkis.ubimetChallenge.communication.HttpGetAsynchTask;
 import com.adamkis.ubimetChallenge.communication.GeoLocationMagager;
 import com.adamkis.ubimetChallenge.communication.LocationHandlerInterface;
 import com.adamkis.ubimetChallenge.model.ConstantsUbimet;
+import com.adamkis.ubimetChallenge.utils.UtilsUbimetChallenge;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -25,7 +29,8 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 
 	private GeoLocationMagager geoLocationManager;
 	private View loadingStatusView;
-	private TextView currentLocationWeatherInfoTextView;
+	private TextView timezone;
+	private TextView temperature;
 	
 	private Animation fade_out;
 	private AnimationListener animationListener;
@@ -36,7 +41,8 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		setContentView(R.layout.activity_main);
 	    overridePendingTransition(R.anim.fade_in_activity, R.anim.fade_out_activity);
 	    
-	    currentLocationWeatherInfoTextView = (TextView)findViewById(R.id.currentLocationWeatherInfo);
+	    timezone = (TextView)findViewById(R.id.timezone);
+	    temperature = (TextView)findViewById(R.id.temperature);
 
     	showProgress(true);
 	    getMyLocation();
@@ -82,24 +88,41 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		
 	}
 
-	
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.fade_in_activity, R.anim.fade_out_activity);
-    }
 
 	@Override
-	public void callBackPost(String response, String mode) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void callBackPost(String response, String mode) {}
 
 	@Override
 	public void callBackGet(String response, String mode) {
 		
 		Log.d("Ubimet", response);
-		currentLocationWeatherInfoTextView.setText(response);
+		
+		if ( response == null || response.isEmpty() ){
+			// TODO show error
+		}
+		
+		try {
+			 
+			JSONObject responseJSON = new JSONObject( UtilsUbimetChallenge.correctUbiMetJSONresponse(response) );
+			timezone.setText(responseJSON.getString("timezone"));
+			temperature.setText(responseJSON
+					.getJSONArray("met_sets")
+					.getJSONObject(0)
+					.getJSONArray("parameter_timesets")
+					.getJSONObject(0)
+					.getJSONArray("data")
+					.getJSONArray(0)
+					.getJSONArray(2)
+					.getString(0)
+					);
+			
+		} catch (JSONException e) {
+			// TODO handle errors!
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		showProgress(false);
 		
 	}
@@ -145,5 +168,12 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		callForPinpointData( location );
 		geoLocationManager.stopListening();
 	}
+	
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.fade_in_activity, R.anim.fade_out_activity);
+    }
+
 	
 }

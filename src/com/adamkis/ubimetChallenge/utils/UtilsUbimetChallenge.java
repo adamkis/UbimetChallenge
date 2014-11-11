@@ -40,6 +40,28 @@ import android.widget.TextView;
 
 public class UtilsUbimetChallenge {
 
+	
+	public static String correctUbiMetJSONresponse( String jsonString ){
+		if ( jsonString != null && !jsonString.isEmpty() )
+			return jsonString.substring(1,jsonString.length()-1);
+		else
+			return null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@SuppressWarnings("deprecation")
 	public static int getScreenWidthInPixes(Activity activity){
 		return activity.getWindowManager().getDefaultDisplay().getWidth();
