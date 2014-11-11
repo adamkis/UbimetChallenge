@@ -28,7 +28,11 @@ import android.widget.TextView;
 public class MainActivity extends ActionBarActivity implements HttpCommunicationInterface, LocationHandlerInterface {
 
 	private GeoLocationMagager geoLocationManager;
+	
 	private View loadingStatusView;
+	private View errorContainer;
+	private TextView errorMessage;
+	
 	private TextView timezone;
 	private TextView temperature;
 	
@@ -98,7 +102,8 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		Log.d("Ubimet", response);
 		
 		if ( response == null || response.isEmpty() ){
-			// TODO show error
+			showErrorMessage(true, null);
+			return;
 		}
 		
 		try {
@@ -115,11 +120,12 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 					.getJSONArray(2)
 					.getString(0)
 					);
-			
+		
 		} catch (JSONException e) {
-			// TODO handle errors!
+			Log.e("Ubimet", "The response could not be parsed");
+			showErrorMessage(true, null); 
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (Exception e) { 
 			e.printStackTrace();
 		}
 		
@@ -157,6 +163,32 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		else{
 			fade_out.setAnimationListener(animationListener);
 			loadingStatusView.startAnimation( fade_out );
+		}
+		
+    	
+		
+	}
+	
+	public void showErrorMessage(boolean show, String message) {
+
+		// init if not inited
+		if( errorContainer == null )
+			errorContainer = (View)findViewById(R.id.errorContainer);
+
+		// Set message
+		if( message != null  ){
+			if( errorMessage == null ){
+				errorMessage = (TextView)findViewById(R.id.errorMessage);
+			}
+			errorMessage.setText(message);
+		}
+			
+		// handling visibility
+		if( show ){
+			errorContainer.setVisibility( View.VISIBLE );
+		}
+		else{
+			errorContainer.setVisibility( View.GONE );
 		}
 		
     	

@@ -109,13 +109,14 @@ public class HttpGetAsynchTask extends AsyncTask<String, Void, String > {
     	catch (UnknownHostException e) {
 			e.printStackTrace();
 			response.delete(0, response.length());
-			response.append("UnknownHostException");
 		}
     	catch (Exception e) {
 			e.printStackTrace();
+			response.delete(0, response.length());
 		}
     	catch (Throwable e) {
 			e.printStackTrace();
+			response.delete(0, response.length());
 			System.gc();
 		}
 		

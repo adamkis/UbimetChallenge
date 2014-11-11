@@ -2,5 +2,6 @@
 <resources>
 
     <string name="please_wait">Bitte warten&#8230;</string>
+    <string name="error_message_main_screen">Oops&#8230; etwas schief gelaufen</string>
 
 </resources>

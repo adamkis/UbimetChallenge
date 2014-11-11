@@ -89,5 +89,28 @@
 	        android:indeterminateDrawable="@drawable/custom_progressbar" />
 
 	</FrameLayout>
+	
+	<!-- Error -->
+	<FrameLayout
+	    android:id="@+id/errorContainer"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="#FFFFFF"
+	    android:clickable="true"
+	    android:visibility="gone" >
+
+       	<TextView
+       	    android:id="@+id/errorMessage"
+         	style="@style/thinFont"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:text="@string/error_message_main_screen"
+            android:textSize="26sp"
+            android:gravity="center"
+			android:layout_gravity="center" />
+
+	</FrameLayout>
 
 </FrameLayout>
