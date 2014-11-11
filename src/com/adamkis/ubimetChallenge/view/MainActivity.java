@@ -15,6 +15,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 
@@ -23,6 +26,9 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 	private GeoLocationMagager geoLocationManager;
 	private View loadingStatusView;
 	private TextView currentLocationWeatherInfoTextView;
+	
+	private Animation fade_out;
+	private AnimationListener animationListener;
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -76,12 +82,6 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		
 	}
 
-	@Override
-    public void onResume() {
-    	super.onResume();
-  
-	}
-
 	
     @Override
     public void finish() {
@@ -107,16 +107,36 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 	@Override
 	public void showProgress(boolean show) {
 
-		if( loadingStatusView == null ){
+		// init if not inited
+		if( loadingStatusView == null )
 			loadingStatusView = (View)findViewById(R.id.loading_status);
+		if( fade_out == null )
+			fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out );
+		if( animationListener == null ){
+			animationListener = new Animation.AnimationListener(){
+	    	    @Override
+	    	    public void onAnimationStart(Animation arg0) {
+	    	    }           
+	    	    @Override
+	    	    public void onAnimationRepeat(Animation arg0) {
+	    	    }           
+	    	    @Override
+	    	    public void onAnimationEnd(Animation arg0) {
+	    	    	loadingStatusView.setVisibility(View.GONE);
+	    	    }
+    		};
 		}
 		
+		// handling visibility
 		if( show ){
 			loadingStatusView.setVisibility( View.VISIBLE );
 		}
 		else{
-			loadingStatusView.setVisibility( View.GONE );
+			fade_out.setAnimationListener(animationListener);
+			loadingStatusView.startAnimation( fade_out );
 		}
+		
+    	
 		
 	}
 
