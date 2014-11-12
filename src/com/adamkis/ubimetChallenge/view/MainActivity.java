@@ -43,8 +43,8 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 	private View errorContainer;
 	private TextView errorMessage;
 	
-	private TextView timezone;
-	private TextView temperature;
+	private TextView timezoneTextView;
+	private TextView parametersTextView;
 	
 	private Animation fade_out;
 	private AnimationListener animationListener;
@@ -57,8 +57,8 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		setContentView(R.layout.activity_main);
 	    overridePendingTransition(R.anim.fade_in_activity, R.anim.fade_out_activity);
 	    
-	    timezone = (TextView)findViewById(R.id.timezone);
-	    temperature = (TextView)findViewById(R.id.temperature);
+	    timezoneTextView = (TextView)findViewById(R.id.timezone);
+	    parametersTextView = (TextView)findViewById(R.id.parameters);
 	    
 	    go_to_weather_list_button = (Button)findViewById(R.id.go_to_weather_list_button);
 	    go_to_weather_list_button.setOnClickListener(new OnClickListener() {
@@ -97,7 +97,6 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 	    url.append("/pinpoint-data?sets=basic_now");
 	    try {
 	    	url.append("&coordinates=");
-//			url.append(URLEncoder.encode("19.04 47.49", "utf-8"));
 	    	url.append(URLEncoder.encode(location.getLongitude() + " " + location.getLatitude(), "utf-8"));
 	    	
 		} catch (UnsupportedEncodingException e) {
@@ -130,9 +129,7 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		
 		try {
 			
-			
-			// TODO
-			
+
         	// Parsing the JSON
         	JSONObject rawSearchResponseJSONObject;
 			try {
@@ -143,7 +140,6 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 				return;
 			}
 
-        	ArrayList<ObjectUbimet> resultList = new ArrayList<ObjectUbimet>();
         	ArrayList<String> parameterNames = new ArrayList<String>();
 
         	// Getting data and the parameter names
@@ -191,7 +187,7 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 			}
 			else{
 
-				timezone.setText("Timezone: " + rawSearchResponseJSONObject.getString("timezone"));
+				timezoneTextView.setText(getResources().getString(R.string.timezone) + ": " + rawSearchResponseJSONObject.getString("timezone"));
 				
 				ObjectUbimet objectUbimet = new ObjectUbimet( null, dataJSONArray.getJSONArray(0), parameterNames );
 				StringBuilder parametersToDisplay = new StringBuilder();
@@ -204,32 +200,12 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 			        }
 		        }
 		        
-		        temperature.setText(parametersToDisplay
+		        parametersTextView.setText(parametersToDisplay
 		        		.toString()
 		        		.trim());
 				
 			}
-			
-			
-			
-			
-			
-			
-			// TODO
-			
-//			JSONObject responseJSON = new JSONObject( UtilsUbimetChallenge.correctUbiMetJSONresponse(response) );
-//			timezone.setText(responseJSON.getString("timezone"));
-//			temperature.setText(responseJSON
-//					.getJSONArray("met_sets")
-//					.getJSONObject(0)
-//					.getJSONArray("parameter_timesets")
-//					.getJSONObject(0)
-//					.getJSONArray("data")
-//					.getJSONArray(0)
-//					.getJSONArray(2)
-//					.getString(0)
-//					);
-		
+
 		} catch (JSONException e) {
 			Log.e("Ubimet", "The response could not be parsed");
 			showErrorMessage(true, null); 

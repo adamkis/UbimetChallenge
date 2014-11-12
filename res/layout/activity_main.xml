@@ -27,7 +27,7 @@
 	            />
 	        
    	        <TextView
-	            android:id="@+id/temperature"
+	            android:id="@+id/parameters"
 	         	style="@style/condensedFont"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
 				android:paddingLeft="20dp"
 				android:paddingRight="20dp"
 				android:text="@string/weather_list_button_label"
-				android:textSize="30sp"
+				android:textSize="24sp"
 				android:textColor="#FFFFFF"
 				android:background="@drawable/black_gradient_button" />
 
