@@ -1,6 +1,7 @@
 package com.adamkis.ubimetChallenge.utils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
@@ -49,9 +50,8 @@ public class UtilsUbimetChallenge {
 	public static String kelvinToCelsius( String tempInKelvin ){
 
 		try {
-			float tempInKelvinInt = Float.parseFloat(tempInKelvin);
-			Float.toString(tempInKelvinInt);
-			return Float.toString(tempInKelvinInt - 273.15f);
+			float tempInKelvinFloat = Float.parseFloat(tempInKelvin);
+			return Float.toString(tempInKelvinFloat - 273.15f);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			return null;
@@ -59,7 +59,25 @@ public class UtilsUbimetChallenge {
 		
 	}	
 	
-	
+	public static String kelvinToCelsiusReadable( String tempInKelvin, int decimalPlace ){
+
+		try {
+			// Parse it to float
+			float tempInFloat = Float.parseFloat(tempInKelvin);
+			// from K to C
+			tempInFloat = tempInFloat - 273.15f;
+			// BigDecimal for rounding
+			BigDecimal bd = new BigDecimal(Float.toString(tempInFloat));
+	        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);       
+	        return bd.toString();
+			
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		
+	}	
 	
 	
 	

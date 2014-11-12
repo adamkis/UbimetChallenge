@@ -38,6 +38,8 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 	private View errorContainer;
 
 	private TextView errorMessage;
+	
+	private ArrayList<ObjectUbimet> weatherDataList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,9 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 	@Override
 	public void callBackGet(String response, String mode) {
 
+		/////////////////////////////////////////
+		// First call for the weather list
+		/////////////////////////////////////////
 		if ( mode.equals("get_weather_list") ){
 		
 			Log.i("Ubimet", "Get_weather_list response was:");
@@ -98,7 +103,7 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 					return;
 				}
 
-	        	ArrayList<ObjectUbimet> resultList = new ArrayList<ObjectUbimet>();
+	        	weatherDataList = new ArrayList<ObjectUbimet>();
 	        	ArrayList<String> parameterNames = new ArrayList<String>();
 
 	        	// Getting data and the parameter names
@@ -154,27 +159,105 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 					for ( int i = 0; i < dataJSONArray.length(); i++  ){
 						try {
 							ObjectUbimet objectUbimet = new ObjectUbimet( poi_refsJSONArray.getString(i), dataJSONArray.getJSONArray(i), parameterNames );
-							resultList.add( objectUbimet );
+							weatherDataList.add( objectUbimet );
 						} catch (Exception e) {
 							e.printStackTrace(); 
 							Log.w("Toovia", "When parsing Ubimet Object results: object cannot be parsed. Index: " + i);
 						}
 					} 
 		
-					if( resultList.size() == 0 ){
+					if( weatherDataList.size() == 0 ){
 						showError(true, null);
 						showProgress(false);
 						return;
 					}
 				
 				}
-
-	
-				ListAdapterWeatherList adapter = new ListAdapterWeatherList(resultList, weatherListActivity);
 				
+				
+				
+			    StringBuilder url = new StringBuilder();
+			    url.append(ConstantsUbimet.UBIMET_HOST_URL);
+			    url.append("/poi-info?sets=basic_now");
+
+			    HashMap<String, String> headers = new HashMap<String, String>();
+			    headers.put("Authorization", ConstantsUbimet.UBIMET_POI_TOKEN);
+			    headers.put("Accept", "application/json");
+			    headers.put("Accept-Language", "en");
+			    
+			    
+			    ////////////////////////////////////////////////////////////
+			    // After getting the POI info, let's make another call to resolve the location names given the POI_IDs
+			    ////////////////////////////////////////////////////////////
+			    HttpGetAsynchTask dlgg = new HttpGetAsynchTask(this, url.toString(), headers, "get_poi_info");
+			    dlgg.execute();
+
+				
+				
+				
+					
+			} catch (Throwable e) {
+				showError(true, null);
+				e.printStackTrace();
+			}
+        
+		}
+		
+		/////////////////////////////////////////
+		// Second call to add additional info to the objects (name for now)
+		/////////////////////////////////////////		
+		if ( mode.equals("get_poi_info") ){
+			
+			Log.i("Ubimet", "get_poi_info response was:");
+			UtilsUbimetChallenge.longLog(response);
+			
+	        try {		
+	        	
+	        	// Parsing the JSON
+	        	JSONObject rawSearchResponseJSONObject;
+				try {
+					rawSearchResponseJSONObject = new JSONObject(UtilsUbimetChallenge.correctUbiMetJSONresponse(response));
+				} catch (JSONException e1) {
+					showError(true, null);
+					e1.printStackTrace();
+					return;
+				}
+
+				JSONArray poi_infoJSONArray = new JSONArray();
+				try {
+					poi_infoJSONArray = rawSearchResponseJSONObject
+							.getJSONArray("spatial_features");
+
+					// Matching objects with the extra info and if they match upon the POI_ID, then add the name of it
+					for ( int i = 0; i < poi_infoJSONArray.length(); i++  ){
+						try{
+							for( ObjectUbimet objectUbimet : weatherDataList ){
+								if( poi_infoJSONArray
+										.getJSONObject(i)
+											.getString("id")
+												.equals(objectUbimet.getPoi_ref()) ){
+									objectUbimet.setName(poi_infoJSONArray
+										.getJSONObject(i)
+											.getString("name"));
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace(); 
+							Log.w("Toovia", "Couldn't add name to the UbimeTobject. Index: " + i);
+						}
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					showError(true, null);
+					showProgress(false);
+					return;
+				}
+
+				// Showing the data in the adapter
+				ListAdapterWeatherList adapter = new ListAdapterWeatherList(weatherDataList, weatherListActivity);
 				listView.setAdapter(adapter);	
 				adapter.notifyDataSetChanged();
-
 				showProgress(false);
 				
 				

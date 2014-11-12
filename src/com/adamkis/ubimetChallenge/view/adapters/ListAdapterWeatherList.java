@@ -1,9 +1,6 @@
 package com.adamkis.ubimetChallenge.view.adapters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.util.Log;
@@ -14,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.adamkis.ubimetChallenge.model.ObjectUbimet;
+import com.adamkis.ubimetChallenge.utils.UtilsUbimetChallenge;
 import com.adamkis.ubimetChallenge.view.R;
 
 public class ListAdapterWeatherList extends BaseAdapter {
@@ -41,7 +39,7 @@ public class ListAdapterWeatherList extends BaseAdapter {
     public long getItemId(int pos) { return pos; }
 
 	static class SearchViewHolder{
-		TextView poi_refTextView;
+		TextView nameTextView;
 		TextView parametersTextView;
 	}
     
@@ -56,7 +54,7 @@ public class ListAdapterWeatherList extends BaseAdapter {
     		convertView = rowInflater.inflate(R.layout.pod_weather_list, p, false);
     		
     		searchViewHolder = new SearchViewHolder();
-    		searchViewHolder.poi_refTextView = (TextView)convertView.findViewById(R.id.poi_ref);
+    		searchViewHolder.nameTextView = (TextView)convertView.findViewById(R.id.name);
     		searchViewHolder.parametersTextView = (TextView)convertView.findViewById(R.id.parameters);
 
     		convertView.setTag(searchViewHolder);
@@ -66,23 +64,30 @@ public class ListAdapterWeatherList extends BaseAdapter {
     	}
 
     	try{
-    		searchViewHolder.poi_refTextView.setText(data.get(pos).getPoi_ref());
     		
+    		// Show name of the place
+    		if( data.get(pos).getName() != null && data.get(pos).getName().length()>0 )
+    			searchViewHolder.nameTextView.setText(data.get(pos).getName());
+    		else
+    			searchViewHolder.nameTextView.setText(data.get(pos).getPoi_ref());
     		
+    		// Show temperature
+    		searchViewHolder.parametersTextView.setText( UtilsUbimetChallenge
+        			.kelvinToCelsiusReadable(
+    					data.get(pos)
+    		        		.getTemp(), 2 ) + " Celsius"
+    		        		);
     		
-    		StringBuilder parametersToDisplay = new StringBuilder();
-    		
-    		HashMap<String, String> parameters = data.get(pos).getParameters();
-	        if( parameters != null && !parameters.isEmpty() ){
-		        Iterator<Entry<String, String>> it = parameters.entrySet().iterator();
-		        while (it.hasNext()) {
-		            Entry<String, String> pairs = (Entry<String, String>)it.next();
-		            parametersToDisplay.append(pairs.getKey() + ": " + pairs.getValue() + "\n");
-//		            it.remove();
-		        }
-	        }
-	        
-    		searchViewHolder.parametersTextView.setText(parametersToDisplay);
+//    		StringBuilder parametersToDisplay = new StringBuilder();
+//    		HashMap<String, String> parameters = data.get(pos).getParameters();
+//	        if( parameters != null && !parameters.isEmpty() ){
+//		        Iterator<Entry<String, String>> it = parameters.entrySet().iterator();
+//		        while (it.hasNext()) {
+//		            Entry<String, String> pairs = (Entry<String, String>)it.next();
+//		            parametersToDisplay.append(pairs.getKey() + ": " + pairs.getValue() + "\n");
+//		        }
+//	        }
+//    		searchViewHolder.parametersTextView.setText(parametersToDisplay);
 
 
     	}

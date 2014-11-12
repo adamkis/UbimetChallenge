@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -187,32 +185,17 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 			}
 			else{
 
+				
+				// Show time zone
 				timezoneTextView.setText(getResources().getString(R.string.timezone) + ": " + rawSearchResponseJSONObject.getString("timezone"));
 				
+				// Show temperature in Celsius with two decimals
 				ObjectUbimet objectUbimet = new ObjectUbimet( null, dataJSONArray.getJSONArray(0), parameterNames );
-//				StringBuilder parametersToDisplay = new StringBuilder();
-//	    		HashMap<String, String> parameters = objectUbimet.getParameters();
-//		        if( parameters != null && !parameters.isEmpty() ){
-//			        Iterator<Entry<String, String>> it = parameters.entrySet().iterator();
-//			        while (it.hasNext()) {
-//			            Entry<String, String> pairs = (Entry<String, String>)it.next();
-//			            parametersToDisplay.append(pairs.getKey() + ": " + pairs.getValue() + "\n");
-//			        }
-//		        }
-//		        parametersTextView.setText(parametersToDisplay
-//		        		.toString()
-//		        		.trim());
-				
-				String celsiusToShow = UtilsUbimetChallenge
-	        			.kelvinToCelsius(
-	        					objectUbimet
-	    		        		.getTemp());
-				if( celsiusToShow != null && celsiusToShow.length()>3 ){
-					celsiusToShow = celsiusToShow.substring(0, 3);
-				}
-				
-		        parametersTextView.setText( celsiusToShow + " Celsius" );
-				
+				parametersTextView.setText( UtilsUbimetChallenge
+	        			.kelvinToCelsiusReadable(
+						objectUbimet
+	    		        		.getTemp(), 2 ) + " Celsius"
+	    		        		);
 			}
 
 		} catch (JSONException e) {
@@ -227,6 +210,14 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public void showProgress(boolean show) {
 

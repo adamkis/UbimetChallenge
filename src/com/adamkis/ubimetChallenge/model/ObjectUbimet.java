@@ -17,6 +17,7 @@ public class ObjectUbimet implements Serializable {
 	private String poi_ref = null;
 	private HashMap<String, String> parameters;
 	private String temp = null;
+	private String name = null;
 	
 	public ObjectUbimet( String poi_ref, JSONArray parametersJSONArray, ArrayList<String> parameterNames ){
 		setParameters(new HashMap<String, String>());
@@ -69,6 +70,14 @@ public class ObjectUbimet implements Serializable {
 
 	public void setTemp(String temp) {
 		this.temp = temp;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	
