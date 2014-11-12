@@ -40,7 +40,7 @@
 	        
 	   		<Button
 	         	style="@style/thinFont"
-	            android:id="@+id/list_publish_button"
+	            android:id="@+id/go_to_weather_list_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:text="@string/error_message_main_screen"
+            android:text="@string/error_message_generic"
             android:textSize="26sp"
             android:gravity="center"
 			android:layout_gravity="center" />

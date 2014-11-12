@@ -27,6 +27,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name="com.adamkis.ubimetChallenge.view.WeatherListActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        
 
     </application>
 

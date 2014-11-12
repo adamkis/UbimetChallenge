@@ -14,19 +14,24 @@ import com.adamkis.ubimetChallenge.communication.LocationHandlerInterface;
 import com.adamkis.ubimetChallenge.model.ConstantsUbimet;
 import com.adamkis.ubimetChallenge.utils.UtilsUbimetChallenge;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.TextView;
 
 
 public class MainActivity extends ActionBarActivity implements HttpCommunicationInterface, LocationHandlerInterface {
 
+	private MainActivity mainActivity = this;
+	
 	private GeoLocationMagager geoLocationManager;
 	
 	private View loadingStatusView;
@@ -39,6 +44,8 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 	private Animation fade_out;
 	private AnimationListener animationListener;
 	
+	private Button go_to_weather_list_button;
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -47,6 +54,16 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 	    
 	    timezone = (TextView)findViewById(R.id.timezone);
 	    temperature = (TextView)findViewById(R.id.temperature);
+	    
+	    go_to_weather_list_button = (Button)findViewById(R.id.go_to_weather_list_button);
+	    go_to_weather_list_button.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				startActivity(new Intent(mainActivity, WeatherListActivity.class));
+				
+			}
+		});
 
     	showProgress(true);
 	    getMyLocation();
