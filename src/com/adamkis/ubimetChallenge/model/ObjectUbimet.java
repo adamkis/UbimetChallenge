@@ -16,6 +16,7 @@ public class ObjectUbimet implements Serializable {
 
 	private String poi_ref = null;
 	private HashMap<String, String> parameters;
+	private String temp = null;
 	
 	public ObjectUbimet( String poi_ref, JSONArray parametersJSONArray, ArrayList<String> parameterNames ){
 		setParameters(new HashMap<String, String>());
@@ -23,12 +24,19 @@ public class ObjectUbimet implements Serializable {
 		
 		for ( int i = 0; i < parametersJSONArray.length(); i++  ){
 			try {
+				// Fill up parameters
 				parameters.put(
 						parameterNames.get(i),
 						parametersJSONArray
 							.getJSONArray(i)
 							.getString(0)
 						);
+				// Set the TEMP variable if the key is TEMP
+				if( parameterNames.get(i) != null && parameterNames.get(i).equalsIgnoreCase("TEMP") ){
+					setTemp(parametersJSONArray
+							.getJSONArray(i)
+							.getString(0));
+				}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			} catch (IndexOutOfBoundsException e) {
@@ -53,6 +61,14 @@ public class ObjectUbimet implements Serializable {
 
 	public void setPoi_ref(String poi_ref) {
 		this.poi_ref = poi_ref;
+	}
+
+	public String getTemp() {
+		return temp;
+	}
+
+	public void setTemp(String temp) {
+		this.temp = temp;
 	}
 
 	

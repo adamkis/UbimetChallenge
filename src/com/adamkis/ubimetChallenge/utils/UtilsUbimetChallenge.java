@@ -22,9 +22,6 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.adamkis.ubimetChallenge.view.R;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -35,7 +32,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import android.widget.TextView;
 
 
 public class UtilsUbimetChallenge {
@@ -50,6 +46,18 @@ public class UtilsUbimetChallenge {
 	
 	
 	
+	public static String kelvinToCelsius( String tempInKelvin ){
+
+		try {
+			float tempInKelvinInt = Float.parseFloat(tempInKelvin);
+			Float.toString(tempInKelvinInt);
+			return Float.toString(tempInKelvinInt - 273.15f);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}	
 	
 	
 	
@@ -72,15 +80,15 @@ public class UtilsUbimetChallenge {
 		return activity.getWindowManager().getDefaultDisplay().getHeight();
 	}
 	
-	public static void showCrouton(String message, Activity activity){
-		
-		View crouton_view = activity.getLayoutInflater().inflate(R.drawable.crouton_layout, null);
-		((TextView)crouton_view.
-				findViewById(R.id.crouton_text)).setText(message);
-		Crouton.show(activity, crouton_view);
-	
-		
-	}
+//	public static void showCrouton(String message, Activity activity){
+//		
+//		View crouton_view = activity.getLayoutInflater().inflate(R.drawable.crouton_layout, null);
+//		((TextView)crouton_view.
+//				findViewById(R.id.crouton_text)).setText(message);
+//		Crouton.show(activity, crouton_view);
+//	
+//		
+//	}
 	
 	public static boolean isEmailValid(String email){
 		if( email == null || email.length()<1 )
