@@ -3,5 +3,6 @@
 
     <string name="please_wait">Kerjuk varjon&#8230;</string>
     <string name="error_message_generic">Oops&#8230; valami nem sikerult</string>
+    <string name="weather_list_button_label">Idojaraslista</string>
 
 </resources>

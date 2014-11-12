@@ -3,5 +3,6 @@
 
     <string name="please_wait">Bitte warten&#8230;</string>
     <string name="error_message_generic">Oops&#8230; etwas schief gelaufen</string>
+    <string name="weather_list_button_label">Wetterliste</string>
 
 </resources>

@@ -1,6 +1,9 @@
 package com.adamkis.ubimetChallenge.view.adapters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.util.Log;
@@ -38,8 +41,8 @@ public class ListAdapterWeatherList extends BaseAdapter {
     public long getItemId(int pos) { return pos; }
 
 	static class SearchViewHolder{
-		TextView titleTextView;
-		TextView summaryTextView;
+		TextView poi_refTextView;
+		TextView parametersTextView;
 	}
     
     public View getView(int pos, View convertView, ViewGroup p) {
@@ -53,8 +56,8 @@ public class ListAdapterWeatherList extends BaseAdapter {
     		convertView = rowInflater.inflate(R.layout.pod_weather_list, p, false);
     		
     		searchViewHolder = new SearchViewHolder();
-    		searchViewHolder.titleTextView = (TextView)convertView.findViewById(R.id.title);
-    		searchViewHolder.summaryTextView = (TextView)convertView.findViewById(R.id.summary);
+    		searchViewHolder.poi_refTextView = (TextView)convertView.findViewById(R.id.poi_ref);
+    		searchViewHolder.parametersTextView = (TextView)convertView.findViewById(R.id.parameters);
 
     		convertView.setTag(searchViewHolder);
     	}
@@ -63,8 +66,23 @@ public class ListAdapterWeatherList extends BaseAdapter {
     	}
 
     	try{
-//    		searchViewHolder.titleTextView.setText(data.get(pos).getTitle());
-//    		searchViewHolder.summaryTextView.setText(data.get(pos).getSummary());
+    		searchViewHolder.poi_refTextView.setText(data.get(pos).getPoi_ref());
+    		
+    		
+    		
+    		StringBuilder parametersToDisplay = new StringBuilder();
+    		
+    		HashMap<String, String> parameters = data.get(pos).getParameters();
+	        if( parameters != null && !parameters.isEmpty() ){
+		        Iterator<Entry<String, String>> it = parameters.entrySet().iterator();
+		        while (it.hasNext()) {
+		            Entry<String, String> pairs = (Entry<String, String>)it.next();
+		            parametersToDisplay.append(pairs.getKey() + ": " + pairs.getValue() + "\n");
+//		            it.remove();
+		        }
+	        }
+	        
+    		searchViewHolder.parametersTextView.setText(parametersToDisplay);
 
 
     	}

@@ -4,6 +4,8 @@
     <string name="app_name">UbimetChallenge</string>
     <string name="please_wait">Please wait&#8230;</string>
     <string name="error_message_generic">Oops&#8230; something went wrong</string>
+    <string name="weather_list_button_label">Weather List</string>
+    
     
     
 

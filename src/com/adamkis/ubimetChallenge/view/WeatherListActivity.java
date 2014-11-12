@@ -1,8 +1,5 @@
 package com.adamkis.ubimetChallenge.view;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,8 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -20,15 +15,11 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.adamkis.ubimetChallenge.communication.GeoLocationMagager;
 import com.adamkis.ubimetChallenge.communication.HttpCommunicationInterface;
 import com.adamkis.ubimetChallenge.communication.HttpGetAsynchTask;
-import com.adamkis.ubimetChallenge.communication.LocationHandlerInterface;
 import com.adamkis.ubimetChallenge.model.ConstantsUbimet;
 import com.adamkis.ubimetChallenge.model.ObjectUbimet;
 import com.adamkis.ubimetChallenge.utils.UtilsUbimetChallenge;
@@ -36,10 +27,8 @@ import com.adamkis.ubimetChallenge.view.adapters.ListAdapterWeatherList;
 
 
 
-public class WeatherListActivity extends ActionBarActivity implements HttpCommunicationInterface, LocationHandlerInterface {
+public class WeatherListActivity extends ActionBarActivity implements HttpCommunicationInterface {
 
-	private GeoLocationMagager geoLocationManager;
-	
 	private android.widget.ListView listView;
 	private WeatherListActivity weatherListActivity;
 	private View loadingStatusView;
@@ -55,7 +44,6 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.weather_list_activity);
 		
-
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Weather List");
 	    overridePendingTransition(R.anim.fade_in_activity, R.anim.fade_out_activity);
@@ -64,48 +52,25 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 
 		listView = (ListView)findViewById(R.id.searchResultList);
  
-
     	showProgress(true);
-	    getMyLocation();
+    	
+    	callForWeatherList();
 	    
 	}
-	    
-	
-    private void getMyLocation() {
-		
-        geoLocationManager = new GeoLocationMagager(this);
-        Location location = geoLocationManager.getLastLocation();
-        
-        if ( location != null ){
-    	    callForPinpointData( location );
-        }
-        else{
-            geoLocationManager.startListening();
-        }
 
-		
-	}
 	
-	private void callForPinpointData( Location location ) {
+	private void callForWeatherList() {
 		
 	    StringBuilder url = new StringBuilder();
 	    url.append(ConstantsUbimet.UBIMET_HOST_URL);
-	    url.append("/pinpoint-data?sets=basic_now");
-	    try {
-	    	url.append("&coordinates=");
-//			url.append(URLEncoder.encode("19.04 47.49", "utf-8"));
-	    	url.append(URLEncoder.encode(location.getLongitude() + " " + location.getLatitude(), "utf-8"));
-	    	
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-	    
+	    url.append("/poi-data?sets=basic_now");
+
 	    HashMap<String, String> headers = new HashMap<String, String>();
-	    headers.put("Authorization", ConstantsUbimet.UBIMET_PINPOINT_TOKEN);
+	    headers.put("Authorization", ConstantsUbimet.UBIMET_POI_TOKEN);
 	    headers.put("Accept", "application/json");
 	    headers.put("Accept-Language", "en");
 	    
-	    HttpGetAsynchTask dlgg = new HttpGetAsynchTask(this, url.toString(), headers, "initial");
+	    HttpGetAsynchTask dlgg = new HttpGetAsynchTask(this, url.toString(), headers, "get_weather_list");
 	    dlgg.execute();
 		
 	}
@@ -116,9 +81,9 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 	@Override
 	public void callBackGet(String response, String mode) {
 
-		if ( mode.equals("search") ){
+		if ( mode.equals("get_weather_list") ){
 		
-			Log.i("Ubimet", "Search response was:");
+			Log.i("Ubimet", "Get_weather_list response was:");
 			UtilsUbimetChallenge.longLog(response);
 			
 	        try {		
@@ -126,19 +91,51 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 	        	// Parsing the JSON
 	        	JSONObject rawSearchResponseJSONObject;
 				try {
-					rawSearchResponseJSONObject = new JSONObject(response);
+					rawSearchResponseJSONObject = new JSONObject(UtilsUbimetChallenge.correctUbiMetJSONresponse(response));
 				} catch (JSONException e1) {
-					showError(true, "Oops, something went wrong...");
+					showError(true, null);
 					e1.printStackTrace();
 					return;
 				}
 
 	        	ArrayList<ObjectUbimet> resultList = new ArrayList<ObjectUbimet>();
+	        	ArrayList<String> parameterNames = new ArrayList<String>();
 
+	        	// Getting data and the parameter names
 				JSONArray dataJSONArray = new JSONArray();
+				JSONArray paramNamesJSONArray = new JSONArray();
+				JSONArray poi_refsJSONArray = new JSONArray();
+				
 				try {
 					dataJSONArray = rawSearchResponseJSONObject
-							.optJSONArray("data");
+							.getJSONArray("met_sets")
+							.getJSONObject(0)
+							.getJSONArray("parameter_timesets")
+							.getJSONObject(0)
+							.getJSONArray("data");
+					
+					paramNamesJSONArray = rawSearchResponseJSONObject
+							.getJSONArray("met_sets")
+							.getJSONObject(0)
+							.getJSONArray("parameter_timesets")
+							.getJSONObject(0)
+							.getJSONArray("params");
+					
+					poi_refsJSONArray = rawSearchResponseJSONObject
+							.getJSONObject("spatial_features")
+							.getJSONArray("poi_refs");
+					
+					// Filling up the param names
+					for ( int i = 0; i < paramNamesJSONArray.length(); i++  ){
+						try{
+							parameterNames.add(paramNamesJSONArray
+									.getString(i));
+						} catch (JSONException e) {
+							e.printStackTrace(); 
+							Log.w("Toovia", "Couldn't add param name to parameter names. Index: " + i);
+						}
+					}
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					showError(true, null);
@@ -146,24 +143,26 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 					return;
 				}
 				
-				if( dataJSONArray.length() < 1 ){
-					showError(true, "No matching results found...");
+				if( dataJSONArray.length() < 1 || parameterNames.size() < 1 || poi_refsJSONArray.length() < 1 ){
+					showError(true, null);
 					showProgress(false);
 					return;
 				}
 				else{
-				
+
+					// Filling up the result set
 					for ( int i = 0; i < dataJSONArray.length(); i++  ){
 						try {
-							resultList.add( new ObjectUbimet( dataJSONArray.optJSONObject(i) ) );
+							ObjectUbimet objectUbimet = new ObjectUbimet( poi_refsJSONArray.getString(i), dataJSONArray.getJSONArray(i), parameterNames );
+							resultList.add( objectUbimet );
 						} catch (Exception e) {
 							e.printStackTrace(); 
-							Log.w("Toovia", "When parsing ISBN book results: book cannot be parsed. Index: " + i);
+							Log.w("Toovia", "When parsing Ubimet Object results: object cannot be parsed. Index: " + i);
 						}
 					} 
 		
 					if( resultList.size() == 0 ){
-						showError(true, "No matching results found...");
+						showError(true, null);
 						showProgress(false);
 						return;
 					}
@@ -175,26 +174,6 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 				
 				listView.setAdapter(adapter);	
 				adapter.notifyDataSetChanged();
-				
-//				listView.setOnItemClickListener(new OnItemClickListener() {
-//				
-//					@Override
-//					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-//					
-//						if ( ((ISBNBook)arg0.getItemAtPosition(arg2)).getTitle() != null ){
-//						
-//							Intent detailsPageIntent = new Intent(weatherListActivity, ProfilePageActivity.class);
-//							detailsPageIntent.putExtra("ISBNBook",
-//									((Serializable)(((ISBNBook)arg0.getItemAtPosition(arg2)))));
-//							weatherListActivity.startActivity( detailsPageIntent );
-//							return;
-//						}
-//						else{
-//							
-//						}
-//					
-//					}
-//				});
 
 				showProgress(false);
 				
@@ -202,6 +181,7 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 				
 					
 			} catch (Throwable e) {
+				showError(true, null);
 				e.printStackTrace();
 			}
         
@@ -221,13 +201,7 @@ public class WeatherListActivity extends ActionBarActivity implements HttpCommun
 		}
 
 	}
-	
-	@Override
-	public void callBackLocationUpdated(Location location) {
-		callForPinpointData( location );
-		geoLocationManager.stopListening();
-	}
-	
+
 
 
 	@Override

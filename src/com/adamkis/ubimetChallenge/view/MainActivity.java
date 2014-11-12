@@ -2,8 +2,12 @@ package com.adamkis.ubimetChallenge.view;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,6 +16,7 @@ import com.adamkis.ubimetChallenge.communication.HttpGetAsynchTask;
 import com.adamkis.ubimetChallenge.communication.GeoLocationMagager;
 import com.adamkis.ubimetChallenge.communication.LocationHandlerInterface;
 import com.adamkis.ubimetChallenge.model.ConstantsUbimet;
+import com.adamkis.ubimetChallenge.model.ObjectUbimet;
 import com.adamkis.ubimetChallenge.utils.UtilsUbimetChallenge;
 
 import android.content.Intent;
@@ -125,18 +130,105 @@ public class MainActivity extends ActionBarActivity implements HttpCommunication
 		
 		try {
 			
-			JSONObject responseJSON = new JSONObject( UtilsUbimetChallenge.correctUbiMetJSONresponse(response) );
-			timezone.setText(responseJSON.getString("timezone"));
-			temperature.setText(responseJSON
-					.getJSONArray("met_sets")
-					.getJSONObject(0)
-					.getJSONArray("parameter_timesets")
-					.getJSONObject(0)
-					.getJSONArray("data")
-					.getJSONArray(0)
-					.getJSONArray(2)
-					.getString(0)
-					);
+			
+			// TODO
+			
+        	// Parsing the JSON
+        	JSONObject rawSearchResponseJSONObject;
+			try {
+				rawSearchResponseJSONObject = new JSONObject(UtilsUbimetChallenge.correctUbiMetJSONresponse(response));
+			} catch (JSONException e1) {
+				showErrorMessage(true, null);
+				e1.printStackTrace();
+				return;
+			}
+
+        	ArrayList<ObjectUbimet> resultList = new ArrayList<ObjectUbimet>();
+        	ArrayList<String> parameterNames = new ArrayList<String>();
+
+        	// Getting data and the parameter names
+			JSONArray dataJSONArray = new JSONArray();
+			JSONArray paramNamesJSONArray = new JSONArray();
+			
+			try {
+				dataJSONArray = rawSearchResponseJSONObject
+						.getJSONArray("met_sets")
+						.getJSONObject(0)
+						.getJSONArray("parameter_timesets")
+						.getJSONObject(0)
+						.getJSONArray("data");
+				
+				paramNamesJSONArray = rawSearchResponseJSONObject
+						.getJSONArray("met_sets")
+						.getJSONObject(0)
+						.getJSONArray("parameter_timesets")
+						.getJSONObject(0)
+						.getJSONArray("params");
+
+				
+				// Filling up the param names
+				for ( int i = 0; i < paramNamesJSONArray.length(); i++  ){
+					try{
+						parameterNames.add(paramNamesJSONArray
+								.getString(i));
+					} catch (JSONException e) {
+						e.printStackTrace(); 
+						Log.w("Toovia", "Couldn't add param name to parameter names. Index: " + i);
+					}
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				showErrorMessage(true, null);
+				showProgress(false);
+				return;
+			}
+			
+			if( dataJSONArray.length() < 1 || parameterNames.size() < 1 ){
+				showErrorMessage(true, null);
+				showProgress(false);
+				return;
+			}
+			else{
+
+				timezone.setText("Timezone: " + rawSearchResponseJSONObject.getString("timezone"));
+				
+				ObjectUbimet objectUbimet = new ObjectUbimet( null, dataJSONArray.getJSONArray(0), parameterNames );
+				StringBuilder parametersToDisplay = new StringBuilder();
+	    		HashMap<String, String> parameters = objectUbimet.getParameters();
+		        if( parameters != null && !parameters.isEmpty() ){
+			        Iterator<Entry<String, String>> it = parameters.entrySet().iterator();
+			        while (it.hasNext()) {
+			            Entry<String, String> pairs = (Entry<String, String>)it.next();
+			            parametersToDisplay.append(pairs.getKey() + ": " + pairs.getValue() + "\n");
+			        }
+		        }
+		        
+		        temperature.setText(parametersToDisplay
+		        		.toString()
+		        		.trim());
+				
+			}
+			
+			
+			
+			
+			
+			
+			// TODO
+			
+//			JSONObject responseJSON = new JSONObject( UtilsUbimetChallenge.correctUbiMetJSONresponse(response) );
+//			timezone.setText(responseJSON.getString("timezone"));
+//			temperature.setText(responseJSON
+//					.getJSONArray("met_sets")
+//					.getJSONObject(0)
+//					.getJSONArray("parameter_timesets")
+//					.getJSONObject(0)
+//					.getJSONArray("data")
+//					.getJSONArray(0)
+//					.getJSONArray(2)
+//					.getString(0)
+//					);
 		
 		} catch (JSONException e) {
 			Log.e("Ubimet", "The response could not be parsed");

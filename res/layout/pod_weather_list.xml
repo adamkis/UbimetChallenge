@@ -18,7 +18,7 @@
           
      <TextView
         style="@style/thinFont"
-        android:id="@+id/title"
+        android:id="@+id/poi_ref"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -36,7 +36,7 @@
         
     <TextView
         style="@style/thinFont"
-        android:id="@+id/summary"
+        android:id="@+id/parameters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
